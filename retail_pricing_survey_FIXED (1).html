@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retail Pricing Survey - Paper Boat</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f5f5;
+  padding: 12px;
+  line-height: 1.6;
+}
+.container { 
+  max-width: 520px; 
+  margin: 0 auto; 
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+.header {
+  background: #f8f9fa;
+  padding: 1.5rem 1.25rem;
+  border-bottom: 1px solid #e9ecef;
+}
+.header h1 { font-size: 20px; font-weight: 500; margin-bottom: 4px; color: #212529; }
+.header p { font-size: 13px; color: #6c757d; }
+.content { padding: 1.25rem; }
+.progress-bar {
+  height: 4px;
+  background: #e9ecef;
+}
+.progress-fill {
+  height: 100%;
+  background: #0d6efd;
+  transition: width 0.3s;
+}
+.instruction {
+  background: #cfe2ff;
+  color: #084298;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+.category-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #dee2e6;
+}
+.category-name {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.category-desc {
+  font-size: 12px;
+  color: #6c757d;
+  margin-bottom: 12px;
+}
+.brand-section {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  border: 1px solid #dee2e6;
+}
+.brand-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.brand-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+.toggle-icon {
+  color: #6c757d;
+  font-size: 18px;
+}
+.sku-table {
+  margin-top: 12px;
+}
+.sku-row {
+  display: grid;
+  grid-template-columns: 1fr 0.6fr 0.6fr 0.6fr 0.5fr;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  align-items: start;
+}
+.sku-row-header {
+  display: grid;
+  grid-template-columns: 1fr 0.6fr 0.6fr 0.6fr 0.5fr;
+  gap: 6px;
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #6c757d;
+}
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+select, input[type="number"] {
+  width: 100%;
+  padding: 8px 6px;
+  font-size: 13px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background: white;
+  color: #212529;
+}
+input[type="number"] {
+  font-family: monospace;
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13,110,253,0.1);
+}
+.mark-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mark-btn {
+  padding: 4px 6px;
+  font-size: 10px;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  background: white;
+  cursor: pointer;
+  text-align: center;
+  white-space: nowrap;
+}
+.mark-btn.active-low {
+  background: #d1e7dd;
+  border-color: #0f5132;
+  color: #0f5132;
+  font-weight: 500;
+}
+.mark-btn.active-high {
+  background: #f8d7da;
+  border-color: #842029;
+  color: #842029;
+  font-weight: 500;
+}
+.error-msg {
+  font-size: 11px;
+  color: #dc3545;
+  margin-top: 2px;
+}
+.nav-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 1.5rem;
+}
+.btn {
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+}
+.btn-primary {
+  background: #0d6efd;
+  color: white;
+}
+.btn-secondary {
+  background: white;
+  border: 1px solid #ced4da;
+  color: #212529;
+}
+.btn:active { transform: scale(0.98); }
+.section2-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #dee2e6;
+}
+.section2-brand {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.section2-sku {
+  font-size: 12px;
+  color: #6c757d;
+  margin-bottom: 12px;
+}
+.price-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+.price-input {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.price-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #6c757d;
+}
+.completion-screen {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script>
+const { useState, useEffect } = React;
+
+const PACK_SIZES = [160, 180, 200, 250, 300, 330, 500, 750, 1000, 1500, 2000];
+const SKUS_PER_BRAND = 10;
+
+const CATEGORIES = {
+  pb_premium: {
+    name: 'Paper Boat Premium Juice (>24%)',
+    desc: 'Premium fruit juices',
+    brands: [
+      { id: 'pb_juice', name: 'Paper Boat', isOwn: true,
+        flavors: ['Aam Panna', 'Jamun', 'Jaljeera', 'Aamras', 'Guava', 'Anaar', 'Golgappe ka Pani'] },
+      { id: 'tropicana_juice', name: 'Tropicana 100%',
+        flavors: ['Orange', 'Mixed Fruit', 'Apple', 'Mango', 'Litchi', 'Pomegranate', 'Guava'] },
+      { id: 'real_juice', name: 'Real 100%',
+        flavors: ['Orange', 'Mango', 'Mixed Fruit', 'Apple', 'Grape', 'Cranberry'] },
+      { id: 'raw_pressery', name: 'Raw Pressery',
+        flavors: ['Orange', 'Apple', 'Watermelon', 'Mixed Fruit', 'Beetroot', 'Green'] },
+    ]
+  },
+  pb_swing: {
+    name: 'PB Swing / Fruit Drinks',
+    desc: 'Nectars and fruit drinks',
+    brands: [
+      { id: 'pb_swing', name: 'PB Swing', isOwn: true,
+        flavors: ['Mango', 'Orange', 'Mixed Fruit', 'Guava', 'Litchi'] },
+      { id: 'frooti', name: 'Frooti',
+        flavors: ['Mango', 'Fizz'] },
+      { id: 'maaza', name: 'Maaza',
+        flavors: ['Mango', 'Guava', 'Litchi'] },
+      { id: 'minutemaid', name: 'Minute Maid',
+        flavors: ['Pulpy Orange', 'Nimbu Fresh', 'Mixed Fruit', 'Apple'] },
+      { id: 'appy', name: 'Appy',
+        flavors: ['Fizz', 'Apple'] },
+      { id: 'tropicana_delight', name: 'Tropicana Delight',
+        flavors: ['Mango', 'Mixed Fruit', 'Orange'] },
+      { id: 'slice', name: 'Slice',
+        flavors: ['Mango', 'Jeera'] },
+      { id: 'bnatural_drinks', name: 'B Natural',
+        flavors: ['Mango', 'Mixed Fruit', 'Orange'] },
+    ]
+  },
+  coconut: {
+    name: 'Coconut Water',
+    desc: 'Natural coconut water',
+    brands: [
+      { id: 'pb_coconut', name: 'PB Swing Coconut', isOwn: true,
+        flavors: ['Natural'] },
+      { id: 'real_coconut', name: 'Real Coconut',
+        flavors: ['Natural', 'Tender'] },
+      { id: 'storia', name: 'Storia',
+        flavors: ['Natural'] },
+      { id: 'bnatural_coconut', name: 'B Natural',
+        flavors: ['Tender'] },
+      { id: 'raw_coconut', name: 'Raw Pressery',
+        flavors: ['Pure'] },
+    ]
+  },
+  nata: {
+    name: 'Nata de Coco',
+    desc: 'Nata drinks',
+    brands: [
+      { id: 'pb_nata', name: 'PB Nata', isOwn: true,
+        flavors: ['Lychee', 'Strawberry', 'Mango', 'Original'] },
+      { id: 'mogu_mogu', name: 'Mogu Mogu',
+        flavors: ['Lychee', 'Strawberry', 'Mango', 'Peach', 'Grape', 'Passion Fruit', 'Melon'] },
+    ]
+  },
+  zero: {
+    name: 'Sugar-Free / Zero',
+    desc: 'Zero sugar variants',
+    brands: [
+      { id: 'pb_zero', name: 'PB Zero', isOwn: true,
+        flavors: ['Aam Panna', 'Jamun', 'Jaljeera'] },
+      { id: 'tropicana_essentials', name: 'Tropicana Essentials',
+        flavors: ['Orange', 'Mixed Fruit', 'Apple'] },
+      { id: 'real_activ', name: 'Real Activ',
+        flavors: ['Orange', 'Mixed Fruit', 'Mango'] },
+      { id: 'bnatural_zero', name: 'B Natural Zero',
+        flavors: ['Mixed Fruit', 'Mango'] },
+    ]
+  },
+};
+
+function App() {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [retailerInfo, setRetailerInfo] = useState({ name: '', city: '', area: '' });
+  const [brandData, setBrandData] = useState({});
+  const [section2Data, setSection2Data] = useState({});
+  const [expandedBrands, setExpandedBrands] = useState({});
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    const initData = {};
+    Object.values(CATEGORIES).forEach(category => {
+      category.brands.forEach(brand => {
+        initData[brand.id] = {
+          skus: Array(SKUS_PER_BRAND).fill(null).map(() => ({
+            flavor: '', packSize: '', mrp: '', mop: '', isLowest: false, isHighest: false
+          }))
+        };
+      });
+    });
+    setBrandData(initData);
+  }, []);
+
+  const toggleBrand = (brandId) => {
+    setExpandedBrands(prev => ({ ...prev, [brandId]: !prev[brandId] }));
+  };
+
+  const updateSKU = (brandId, skuIndex, field, value) => {
+    setBrandData(prev => {
+      const newSkus = [...prev[brandId].skus];
+      newSkus[skuIndex] = { ...newSkus[skuIndex], [field]: value };
+      return { ...prev, [brandId]: { skus: newSkus } };
+    });
+  };
+
+  const toggleMark = (brandId, skuIndex, markType) => {
+    setBrandData(prev => {
+      const newSkus = prev[brandId].skus.map((sku, idx) => {
+        if (idx === skuIndex) {
+          return { ...sku, [markType]: !sku[markType] };
+        }
+        // Unmark others of same type
+        if (markType === 'isLowest' || markType === 'isHighest') {
+          return { ...sku, [markType]: false };
+        }
+        return sku;
+      });
+      return { ...prev, [brandId]: { skus: newSkus } };
+    });
+  };
+
+  const validateSection1 = () => {
+    const newErrors = {};
+    let hasData = false;
+
+    Object.entries(brandData).forEach(([brandId, data]) => {
+      data.skus.forEach((sku, idx) => {
+        const hasContent = sku.flavor || sku.packSize || sku.mrp || sku.mop;
+        if (hasContent) {
+          hasData = true;
+          if (!sku.flavor) newErrors[`${brandId}-${idx}-flavor`] = 'Required';
+          if (!sku.packSize) newErrors[`${brandId}-${idx}-packSize`] = 'Required';
+          if (!sku.mrp) newErrors[`${brandId}-${idx}-mrp`] = 'Required';
+          if (!sku.mop) newErrors[`${brandId}-${idx}-mop`] = 'Required';
+          if (sku.mrp && sku.mop && parseFloat(sku.mop) > parseFloat(sku.mrp)) {
+            newErrors[`${brandId}-${idx}-mop`] = 'MOP ≤ MRP';
+          }
+        }
+      });
+    });
+
+    setErrors(newErrors);
+    if (!hasData) {
+      alert('Please enter data for at least one product');
+      return false;
+    }
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const updateSection2 = (brandId, skuType, field, value) => {
+    setSection2Data(prev => ({
+      ...prev,
+      [brandId]: {
+        ...prev[brandId],
+        [skuType]: { ...prev[brandId]?.[skuType], [field]: value }
+      }
+    }));
+  };
+
+  const validateSection2 = () => {
+    // Relaxed validation — only require MOP+MRP if distributor price is entered
+    const newErrors = {};
+    Object.entries(section2Data).forEach(([brandId, data]) => {
+      ['lowest', 'highest'].forEach(type => {
+        if (data[type]?.distributorPrice) {
+          if (!data[type].mop) newErrors[`${brandId}-${type}-mop`] = 'Required';
+          if (!data[type].mrp) newErrors[`${brandId}-${type}-mrp`] = 'Required';
+        }
+      });
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    // ── Flatten all data into a single row for Google Sheets ──
+    const flat = {
+      timestamp: new Date().toISOString(),
+      submitted_at: new Date().toLocaleString('en-IN', {timeZone:'Asia/Kolkata'}),
+      retailer_name: retailerInfo.name,
+      retailer_city: retailerInfo.city,
+      retailer_area: retailerInfo.area,
+    };
+
+    // Section 1 — SKU pricing per brand
+    Object.entries(brandData).forEach(([brandId, data]) => {
+      data.skus.forEach((sku, i) => {
+        if (!sku.flavor && !sku.mrp) return; // skip empty rows
+        const prefix = `s1_${brandId}_sku${i+1}`;
+        flat[prefix + '_flavor']   = sku.flavor    || '';
+        flat[prefix + '_size']     = sku.packSize  || '';
+        flat[prefix + '_mrp']      = sku.mrp       || '';
+        flat[prefix + '_mop']      = sku.mop       || '';
+        flat[prefix + '_isLowest'] = sku.isLowest  ? 'Yes' : '';
+        flat[prefix + '_isHighest']= sku.isHighest ? 'Yes' : '';
+      });
+    });
+
+    // Section 2 — Distributor pricing
+    Object.entries(section2Data).forEach(([brandId, data]) => {
+      ['lowest','highest'].forEach(type => {
+        const d = data[type];
+        if (!d) return;
+        const prefix = `s2_${brandId}_${type}`;
+        flat[prefix + '_dist_price'] = d.distributorPrice || '';
+        flat[prefix + '_mop']        = d.mop              || '';
+        flat[prefix + '_mrp']        = d.mrp              || '';
+        // Calculated margin
+        if (d.mop && d.distributorPrice) {
+          const margin = ((parseFloat(d.mop) - parseFloat(d.distributorPrice)) / parseFloat(d.mop) * 100).toFixed(1);
+          flat[prefix + '_margin_pct'] = margin + '%';
+        }
+      });
+    });
+
+    // ── Submit to Google Sheets ──
+    setCurrentStep('submitting');
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbywlJW1at5bSMLC9yNyy4Xknq9zbTRy4pATTZOZT4p3vU9-I8DRPOCCUonwSIsMcD6o/exec';
+    try {
+      // Send as text/plain to avoid CORS preflight — Apps Script reads it as JSON
+      const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(flat),
+      });
+      // no-cors always returns opaque response — assume success if no throw
+      setCurrentStep(3);
+    } catch(err) {
+      console.error('Submit error:', err);
+      // Fallback: open URL with data as param (last resort)
+      try {
+        const encoded = encodeURIComponent(JSON.stringify(flat));
+        await fetch(SCRIPT_URL + '?data=' + encoded, { mode: 'no-cors' });
+        setCurrentStep(3);
+      } catch(err2) {
+        alert('Could not reach Google Sheets. Check your internet and try again.\n\nError: ' + err2.message);
+        setCurrentStep(2);
+      }
+    }
+  };
+
+  const getProgress = () => {
+    if (currentStep === 0) return 0;
+    if (currentStep === 1) return 40;
+    if (currentStep === 2) return 75;
+    return 100;
+  };
+
+  const getBrandsWithMarkedSKUs = () => {
+    const brands = [];
+    Object.entries(brandData).forEach(([brandId, data]) => {
+      const lowestSKU = data.skus.find(sku => sku.isLowest && sku.flavor);
+      const highestSKU = data.skus.find(sku => sku.isHighest && sku.flavor);
+      if (lowestSKU || highestSKU) {
+        const brandInfo = Object.values(CATEGORIES)
+          .flatMap(cat => cat.brands)
+          .find(b => b.id === brandId);
+        brands.push({ brandId, brandName: brandInfo?.name, lowestSKU, highestSKU });
+      }
+    });
+    return brands;
+  };
+
+  const validateRetailer = () => {
+    if (!retailerInfo.name.trim()) { alert('Please enter your shop/retailer name'); return false; }
+    if (!retailerInfo.city.trim()) { alert('Please enter your city'); return false; }
+    return true;
+  };
+
+  const renderIntro = () => (
+    React.createElement('div', { className: 'content' },
+      React.createElement('div', { className: 'instruction' },
+        React.createElement('strong', null, 'How to fill:'),
+        React.createElement('br'),
+        '1. Enter your shop details below',
+        React.createElement('br'),
+        '2. For each brand, enter all SKUs you stock (up to 10)',
+        React.createElement('br'),
+        '3. Mark the LOWEST and HIGHEST priced SKU',
+        React.createElement('br'),
+        '4. In next section, add distributor pricing for marked SKUs',
+        React.createElement('br'),
+        React.createElement('br'),
+        '• MRP = Price on pack',
+        React.createElement('br'),
+        '• MOP = Your selling price'
+      ),
+      React.createElement('div', { style: { marginBottom: '16px' } },
+        React.createElement('label', { style: { fontSize: '13px', fontWeight: 500, display: 'block', marginBottom: '6px' } }, 'Shop / Retailer Name *'),
+        React.createElement('input', {
+          type: 'text',
+          placeholder: 'e.g. Sharma General Store',
+          value: retailerInfo.name,
+          onChange: (e) => setRetailerInfo(prev => ({ ...prev, name: e.target.value })),
+          style: { width: '100%', padding: '10px', fontSize: '14px', border: '1px solid #ced4da', borderRadius: '6px' }
+        })
+      ),
+      React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' } },
+        React.createElement('div', null,
+          React.createElement('label', { style: { fontSize: '13px', fontWeight: 500, display: 'block', marginBottom: '6px' } }, 'City *'),
+          React.createElement('input', {
+            type: 'text',
+            placeholder: 'e.g. Mumbai',
+            value: retailerInfo.city,
+            onChange: (e) => setRetailerInfo(prev => ({ ...prev, city: e.target.value })),
+            style: { width: '100%', padding: '10px', fontSize: '14px', border: '1px solid #ced4da', borderRadius: '6px' }
+          })
+        ),
+        React.createElement('div', null,
+          React.createElement('label', { style: { fontSize: '13px', fontWeight: 500, display: 'block', marginBottom: '6px' } }, 'Area / Locality'),
+          React.createElement('input', {
+            type: 'text',
+            placeholder: 'e.g. Andheri West',
+            value: retailerInfo.area,
+            onChange: (e) => setRetailerInfo(prev => ({ ...prev, area: e.target.value })),
+            style: { width: '100%', padding: '10px', fontSize: '14px', border: '1px solid #ced4da', borderRadius: '6px' }
+          })
+        )
+      ),
+      React.createElement('button', { className: 'btn btn-primary', style: { width: '100%' }, onClick: () => {
+        if (validateRetailer()) setCurrentStep(1);
+      }},
+        'Start Survey →'
+      )
+    )
+  );
+
+  const renderSection1 = () => (
+    React.createElement('div', { className: 'content' },
+      React.createElement('div', { className: 'instruction' },
+        'Enter all SKUs. Mark ↓ for LOWEST price and ↑ for HIGHEST price.'
+      ),
+      
+      Object.entries(CATEGORIES).map(([catKey, category]) => (
+        React.createElement('div', { key: catKey, className: 'category-card' },
+          React.createElement('div', { className: 'category-name' }, category.name),
+          React.createElement('div', { className: 'category-desc' }, category.desc),
+          
+          category.brands.map(brand => {
+            const isExpanded = expandedBrands[brand.id];
+            const skus = brandData[brand.id]?.skus || [];
+            const hasData = skus.some(sku => sku.flavor);
+            
+            return React.createElement('div', { key: brand.id, className: 'brand-section' },
+              React.createElement('div', { className: 'brand-header', onClick: () => toggleBrand(brand.id) },
+                React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px' } },
+                  React.createElement('span', { className: 'brand-name' }, brand.name),
+                  brand.isOwn && React.createElement('span', { 
+                    style: { fontSize: '10px', padding: '2px 6px', borderRadius: '4px',
+                      background: '#cfe2ff', color: '#084298' } 
+                  }, 'OWN'),
+                  hasData && React.createElement('span', { style: { fontSize: '10px', color: '#198754' } }, '✓')
+                ),
+                React.createElement('span', { className: 'toggle-icon' }, isExpanded ? '−' : '+')
+              ),
+              
+              isExpanded && React.createElement('div', { className: 'sku-table' },
+                React.createElement('div', { className: 'sku-row-header' },
+                  React.createElement('div', null, 'Flavor'),
+                  React.createElement('div', null, 'Size(ml)'),
+                  React.createElement('div', null, 'MRP'),
+                  React.createElement('div', null, 'MOP'),
+                  React.createElement('div', null, 'Mark')
+                ),
+                
+                skus.map((sku, idx) => (
+                  React.createElement('div', { key: idx, className: 'sku-row' },
+                    React.createElement('div', { className: 'input-wrapper' },
+                      React.createElement('select',
+                        {
+                          value: sku.flavor,
+                          onChange: (e) => updateSKU(brand.id, idx, 'flavor', e.target.value)
+                        },
+                        React.createElement('option', { value: '' }, '-- Select --'),
+                        brand.flavors.map(f => React.createElement('option', { key: f, value: f }, f))
+                      ),
+                      errors[`${brand.id}-${idx}-flavor`] && 
+                        React.createElement('span', { className: 'error-msg' }, errors[`${brand.id}-${idx}-flavor`])
+                    ),
+                    
+                    React.createElement('div', { className: 'input-wrapper' },
+                      React.createElement('select',
+                        {
+                          value: sku.packSize,
+                          onChange: (e) => updateSKU(brand.id, idx, 'packSize', e.target.value)
+                        },
+                        React.createElement('option', { value: '' }, '--'),
+                        PACK_SIZES.map(s => React.createElement('option', { key: s, value: s }, s))
+                      ),
+                      errors[`${brand.id}-${idx}-packSize`] && 
+                        React.createElement('span', { className: 'error-msg' }, errors[`${brand.id}-${idx}-packSize`])
+                    ),
+                    
+                    React.createElement('div', { className: 'input-wrapper' },
+                      React.createElement('input', {
+                        type: 'number',
+                        inputMode: 'decimal',
+                        placeholder: '0',
+                        value: sku.mrp,
+                        onChange: (e) => updateSKU(brand.id, idx, 'mrp', e.target.value)
+                      }),
+                      errors[`${brand.id}-${idx}-mrp`] && 
+                        React.createElement('span', { className: 'error-msg' }, errors[`${brand.id}-${idx}-mrp`])
+                    ),
+                    
+                    React.createElement('div', { className: 'input-wrapper' },
+                      React.createElement('input', {
+                        type: 'number',
+                        inputMode: 'decimal',
+                        placeholder: '0',
+                        value: sku.mop,
+                        onChange: (e) => updateSKU(brand.id, idx, 'mop', e.target.value)
+                      }),
+                      errors[`${brand.id}-${idx}-mop`] && 
+                        React.createElement('span', { className: 'error-msg' }, errors[`${brand.id}-${idx}-mop`])
+                    ),
+                    
+                    React.createElement('div', { className: 'mark-buttons' },
+                      React.createElement('button', {
+                        className: `mark-btn ${sku.isLowest ? 'active-low' : ''}`,
+                        onClick: () => toggleMark(brand.id, idx, 'isLowest'),
+                        disabled: !sku.flavor
+                      }, sku.isLowest ? '✓ Low' : '↓'),
+                      React.createElement('button', {
+                        className: `mark-btn ${sku.isHighest ? 'active-high' : ''}`,
+                        onClick: () => toggleMark(brand.id, idx, 'isHighest'),
+                        disabled: !sku.flavor
+                      }, sku.isHighest ? '✓ High' : '↑')
+                    )
+                  )
+                ))
+              )
+            );
+          })
+        )
+      )),
+      
+      React.createElement('div', { className: 'nav-buttons' },
+        React.createElement('button', { className: 'btn btn-secondary', onClick: () => setCurrentStep(0) }, 'Back'),
+        React.createElement('button', { className: 'btn btn-primary', onClick: () => {
+          if (validateSection1()) setCurrentStep(2);
+        }}, 'Next: Distributor Pricing')
+      )
+    )
+  );
+
+  const renderSection2 = () => {
+    const brandsWithMarked = getBrandsWithMarkedSKUs();
+    
+    return React.createElement('div', { className: 'content' },
+      React.createElement('div', { className: 'instruction' },
+        'For marked SKUs, enter distributor pricing (price you pay to distributor)'
+      ),
+      
+      brandsWithMarked.length === 0 ? 
+        React.createElement('div', { style: { padding: '2rem', textAlign: 'center', color: '#6c757d' } },
+          'No SKUs marked as lowest/highest. Go back and mark them.'
+        ) :
+        brandsWithMarked.map(({ brandId, brandName, lowestSKU, highestSKU }) => (
+          React.createElement('div', { key: brandId, className: 'section2-card' },
+            React.createElement('div', { className: 'section2-brand' }, brandName),
+            
+            lowestSKU && React.createElement('div', { style: { marginBottom: '16px' } },
+              React.createElement('div', { className: 'section2-sku' },
+                `↓ LOWEST: ${lowestSKU.flavor} ${lowestSKU.packSize}ml (MRP ₹${lowestSKU.mrp}, MOP ₹${lowestSKU.mop})`
+              ),
+              React.createElement('div', { className: 'price-grid' },
+                React.createElement('div', { className: 'price-input' },
+                  React.createElement('label', { className: 'price-label' }, 'Dist. Price'),
+                  React.createElement('input', {
+                    type: 'number',
+                    inputMode: 'decimal',
+                    placeholder: '0',
+                    value: section2Data[brandId]?.lowest?.distributorPrice || '',
+                    onChange: (e) => updateSection2(brandId, 'lowest', 'distributorPrice', e.target.value)
+                  }),
+                  errors[`${brandId}-lowest-distributorPrice`] && 
+                    React.createElement('span', { className: 'error-msg' }, errors[`${brandId}-lowest-distributorPrice`])
+                ),
+                React.createElement('div', { className: 'price-input' },
+                  React.createElement('label', { className: 'price-label' }, 'MOP'),
+                  React.createElement('input', {
+                    type: 'number',
+                    inputMode: 'decimal',
+                    value: lowestSKU.mop,
+                    readOnly: true,
+                    style: { background: '#f8f9fa' }
+                  })
+                ),
+                React.createElement('div', { className: 'price-input' },
+                  React.createElement('label', { className: 'price-label' }, 'MRP'),
+                  React.createElement('input', {
+                    type: 'number',
+                    inputMode: 'decimal',
+                    value: lowestSKU.mrp,
+                    readOnly: true,
+                    style: { background: '#f8f9fa' }
+                  })
+                )
+              )
+            ),
+            
+            highestSKU && React.createElement('div', null,
+              React.createElement('div', { className: 'section2-sku' },
+                `↑ HIGHEST: ${highestSKU.flavor} ${highestSKU.packSize}ml (MRP ₹${highestSKU.mrp}, MOP ₹${highestSKU.mop})`
+              ),
+              React.createElement('div', { className: 'price-grid' },
+                React.createElement('div', { className: 'price-input' },
+                  React.createElement('label', { className: 'price-label' }, 'Dist. Price'),
+                  React.createElement('input', {
+                    type: 'number',
+                    inputMode: 'decimal',
+                    placeholder: '0',
+                    value: section2Data[brandId]?.highest?.distributorPrice || '',
+                    onChange: (e) => updateSection2(brandId, 'highest', 'distributorPrice', e.target.value)
+                  }),
+                  errors[`${brandId}-highest-distributorPrice`] && 
+                    React.createElement('span', { className: 'error-msg' }, errors[`${brandId}-highest-distributorPrice`])
+                ),
+                React.createElement('div', { className: 'price-input' },
+                  React.createElement('label', { className: 'price-label' }, 'MOP'),
+                  React.createElement('input', {
+                    type: 'number',
+                    inputMode: 'decimal',
+                    value: highestSKU.mop,
+                    readOnly: true,
+                    style: { background: '#f8f9fa' }
+                  })
+                ),
+                React.createElement('div', { className: 'price-input' },
+                  React.createElement('label', { className: 'price-label' }, 'MRP'),
+                  React.createElement('input', {
+                    type: 'number',
+                    inputMode: 'decimal',
+                    value: highestSKU.mrp,
+                    readOnly: true,
+                    style: { background: '#f8f9fa' }
+                  })
+                )
+              )
+            )
+          )
+        )),
+      
+      React.createElement('div', { className: 'nav-buttons' },
+        React.createElement('button', { className: 'btn btn-secondary', onClick: () => setCurrentStep(1) }, 'Back'),
+        React.createElement('button', { className: 'btn btn-primary', onClick: () => {
+          if (validateSection2()) handleSubmit();
+        }}, 'Submit Survey')
+      )
+    );
+  };
+
+  const renderComplete = () => (
+    React.createElement('div', { className: 'content' },
+      React.createElement('div', { className: 'completion-screen' },
+        React.createElement('div', { style: { fontSize: '48px', marginBottom: '1rem' } }, '✅'),
+        React.createElement('div', { style: { fontSize: '20px', fontWeight: 500, marginBottom: '8px' } }, 'Submitted Successfully!'),
+        React.createElement('div', { style: { fontSize: '14px', color: '#6c757d', marginBottom: '1.5rem' } },
+          'Response saved to Google Sheets. You can close this page.'
+        ),
+        React.createElement('button', { className: 'btn btn-primary', onClick: () => window.location.reload() },
+          'Submit Another Response'
+        )
+      )
+    )
+  );
+
+  const renderSubmitting = () => (
+    React.createElement('div', { className: 'content' },
+      React.createElement('div', { className: 'completion-screen' },
+        React.createElement('div', { style: { fontSize: '48px', marginBottom: '1rem' } }, '⏳'),
+        React.createElement('div', { style: { fontSize: '18px', fontWeight: 500 } }, 'Submitting to Google Sheets…'),
+        React.createElement('div', { style: { fontSize: '13px', color: '#6c757d', marginTop: '8px' } }, 'Please wait, do not close this page.')
+      )
+    )
+  );
+
+  return React.createElement('div', { className: 'container' },
+    React.createElement('div', { className: 'progress-bar' },
+      React.createElement('div', { className: 'progress-fill', style: { width: `${getProgress()}%` } })
+    ),
+    
+    React.createElement('div', { className: 'header' },
+      React.createElement('h1', null, 'Retail Pricing Survey'),
+      React.createElement('p', null,
+        currentStep === 0 && 'Instructions',
+        currentStep === 1 && 'Section 1: SKU Pricing',
+        currentStep === 2 && 'Section 2: Distributor Pricing',
+        currentStep === 3 && 'Complete'
+      )
+    ),
+    
+    currentStep === 0 && renderIntro(),
+    currentStep === 1 && renderSection1(),
+    currentStep === 2 && renderSection2(),
+    currentStep === 'submitting' && renderSubmitting(),
+    currentStep === 3 && renderComplete()
+  );
+}
+
+ReactDOM.render(React.createElement(App), document.getElementById('root'));
+</script>
+</body>
+</html>
